@@ -112,14 +112,18 @@ var planCourse = (e) => {
         if (courses.hasOwnProperty(e[i].id)) continue;
         courses[e[i].id] = [];
         courses[e[i].id+"-rec"] = [];
+        courses[e[i].id+"-lab"] = [];
         for (c in course.Content) {
           if (course.Content[c].id == e[i].id) {
-            if (course.Content[c].component != "Recitation") {
-              if (course.Content[c].schedule != "")
-                courses[e[i].id].push(course.Content[c]);
-            } else {
+            if (course.Content[c].component == "Recitation") {
               if (course.Content[c].schedule != "")
                 courses[e[i].id+"-rec"].push(course.Content[c]);
+            } else if (course.Content[c].component == "Laboratory"){
+              if (course.Content[c].schedule != "")
+                courses[e[i].id+"-lab"].push(course.Content[c]);
+            } else {
+              if (course.Content[c].schedule != "")
+                courses[e[i].id].push(course.Content[c]);
             }
           }
         }
@@ -136,6 +140,13 @@ var planCourse = (e) => {
         }
         else {
           delete courses[e[i].id+"-rec"];
+        }
+        if (courses[e[i].id+"-lab"].length > 0) {
+          clen++;
+          coursename.push(e[i].id+"-lab");
+        }
+        else {
+          delete courses[e[i].id+"-lab"];
         }
       }
       // Find All Possibilities

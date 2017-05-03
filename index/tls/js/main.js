@@ -138,7 +138,7 @@ var startplan = () => {
 var showplan = (e) => {
   if (result.length <= e) return;
   
-  $("#pagenum").html(e + 1 + "");
+  $("#pagenum").html((e + 1) + "/" + (result.length));
   for (var i in result[e]) {
     var co = parseInt(Math.random() * Colors.length);
     for (var j in result[e][i].days)

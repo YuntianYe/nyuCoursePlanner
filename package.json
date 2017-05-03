@@ -1,13 +1,14 @@
 {
-  "name": "HibiBall",
-  "version": "1.0.1",
-  "description": "A Game Based On Html5",
-  "main": "index.js",
+  "name": "NYUCourse",
+  "version": "1.0.2",
+  "description": "NYU Course Planner",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "NHibiki"
+    "NHibiki",
+    "Yuuno Hibiki"
   ],
   "author": "NHibiki",
   "license": "GPLv3",

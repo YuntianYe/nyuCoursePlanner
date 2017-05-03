@@ -1,10 +1,101 @@
 import os
+import re
 import datetime
 import json
 import time
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+
+class Map:
+    def __init__(self):
+        self.map = {}
+        self.feature_a = re.compile('-00[0-9]')
+        self.feature_b = re.compile('W-[0-9]+')
+
+    def get_content(self):
+        with open('class.txt', 'r') as f:
+            topics = f.readlines()
+        for topic in topics:
+            if '-SHU' in topic and topic != '\n':
+                topic = topic.split('\t')
+                if self.feature_a.search(topic[1]):
+                    topic[1] = topic[1].replace(self.feature_a.search(topic[1]).group(), '')
+                if 'CCCF-SHU101W' in (topic[0] + topic[1]):
+                    topic[1] = topic[1].replace('-', '')
+                if '/' in topic[0]:
+                    topic[0] = topic[0].split('/')
+                    if topic[0][0] not in self.map or topic[0][1] not in self.map:
+                        self.map[topic[0][0] + ' ' + topic[1]] = topic[2].strip()
+                        self.map[topic[0][1] + ' ' + topic[1]] = topic[2].strip()
+                else:
+                    if topic[0] not in self.map:
+                        self.map[topic[0] + ' ' + topic[1]] = topic[2].strip()
+
+    def get_map(self, origin):
+        mapping = self.map
+        for detail in origin:
+            try:
+                detail['topic'] = mapping[detail['id']]
+            except Exception:
+                pass
+
+
+class Course:
+    def __init__(self):
+        self.demo = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
+        self.pattern = re.compile('[0-9]+\.[0-9]{2} [A-Z]{2} - [0-9]+\.[0-9]{2} [A-Z]{2}')
+
+    def parseCourse(self, course):
+        c = {}
+        if 'Class Status: Open' in course:
+            c["status"] = 1
+        elif 'Class Status: Close' in course:
+            c["status"] = -1
+        else:
+            c["status"] = 0
+
+        cpos = course.find('Component:')
+        c["component"] = course[cpos + 11: course.find("\n", cpos)].strip()
+        start = course.find('Topic: ')
+        if start != -1:
+            c["topic"] = course[start + 7: course.find('|', start)].strip()
+            start = course.find('|', start) + 1
+        else:
+            c["topic"] = course[: course.find('|')].strip()
+            start = course.find('|') + 1
+        topc = c["topic"].split("\n")
+        c["title"] = c["topic"].split("\n")[0].strip()
+        if len(topc) > 1:
+            c["id"] = c["topic"].split("\n")[1].strip()
+        else:
+            c["id"] = c["topic"].split("\n")[0].strip()
+        c["credit"] = course[start: course.find('|', start)].strip()
+        c["credit"] = c["credit"].replace("units", "").strip()
+        start = course.find('|', start) + 1
+        c["classNum"] = course[start + 8: course.find('|', start)].strip()
+        start = course.find('|', start) + 1
+        c["session"] = course[start + 10: course.find('|', start)].strip()
+        start = course.find('|', start) + 1
+        c["section"] = course[start + 10: course.find('Class Status:')].strip()
+        c["schedule"] = ""
+        if self.pattern.search(course):
+            c["schedule"] = self.pattern.search(course).group()
+        c["schedule"].strip()
+        pos = course.find(c["schedule"])
+        c["instructor"] = ""
+        if 'with' in course[pos+len(c["schedule"]):pos+len(c["schedule"])+5]:
+            for i in course[pos+len(c["schedule"])+5:]:
+                if i != '\n':
+                    c["instructor"] += i
+                else:
+                    break
+        c["days"] = []
+        for day in self.demo:
+            if day in course:
+                c["days"].append(day)
+        c["raw"] = course
+        return c
 
 class NYUSubmitter():
     def __init__(self):
@@ -59,6 +150,7 @@ class NYUSubmitter():
             try:
                 for i in range(5, 50):
                     s = str(i)
+                    time.sleep(1)
                     self.driver.execute_script("window.frames[\"TargetContent\"].document.querySelectorAll(\"a[ptlinktgt='pt_peoplecode']\")[" + s + "].click()")
                     time.sleep(1)
                     # Do Something...
@@ -93,10 +185,21 @@ class NYUSubmitter():
             print ("[Login Error]")
             self.logined = False
 
+    def parse(self):
+        parser = Course()
+        lst = []
+        for i in self.nyucourse:
+            lst.append(parser.parseCourse(i))
+        return lst
+    
     def saveCourses(self):
+        a = Map()
+        content = self.parse()
+        a.get_content()
+        a.get_map(content)
         filec = json.dumps({
-            "Count" : len(self.nyucourse),
-            "Content" : self.nyucourse
+            "Count" : len(content),
+            "Content" : content
         })
         with open("nyucourse.json", "w") as f:
             f.write(filec)

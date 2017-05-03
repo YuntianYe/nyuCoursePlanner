@@ -1,0 +1,18 @@
+{
+  "name": "HibiBall",
+  "version": "1.0.1",
+  "description": "A Game Based On Html5",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "NHibiki"
+  ],
+  "author": "NHibiki",
+  "license": "GPLv3",
+  "dependencies": {
+    "express": "^4.14.0",
+    "socket.io": "^1.5.1"
+  }
+}

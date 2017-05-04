@@ -157,10 +157,6 @@ var showplan = (e) => {
   
 }
 
-$(window).on("load", () => {
-  initTable();
-});
-
 $("#navinp").on("keyup", (e) => {
   search(e);
 });
@@ -226,4 +222,9 @@ var Toastoff = () => {
 
 $("#snackbar").on("click", (e) => {
     Toastoff();
+});
+
+$(window).on("load", () => {
+  initTable();
+  Toaston("NYUCourse by YuunoHibiki.", 5000);
 });

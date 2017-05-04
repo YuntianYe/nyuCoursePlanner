@@ -17,6 +17,7 @@ var curpage = 1;
 var cart = [];
 var result = [];
 var cachedCourse = {};
+var ToastTimer = null;
 
 var switchData = (d, e) => {
   if (reqData.hasOwnProperty(d)) {
@@ -36,11 +37,13 @@ var search = (e) => {
       $("#navinp").val("");
       reqData.data = "";
       $("#navinp").css("background-color", "indianred");
+      Toaston("Please Select Semester and Location.", 5000);
       e.preventDefault();
       return;
     }
   }
   $("#navinp").css("background-color", "");
+  Toastoff();
   
   socket.emit("search", reqData);
 };
@@ -62,10 +65,15 @@ var initTable = () => {
   $("#cal").html(mycal);
 }
 
-var createBlock = (id, start, end, title, addon, color) => {
+var createBlock = (id, start, end, title, addon, color, s) => {
   var p = $(`#${id}`).html();
-  p += `<div class="course" style="top:${start}%;height:${end-start}%;background-color:${Colors[color]}" course="${title}" addonData="${addon}">${end-start > 50 ? title : ""}</div>`
+  var msg = "";
+  if (!s && end - start > 50) {
+    msg = `<b>${title}</b><br /><small>${addon}</small>`;
+  }
+  p += `<div class="course" style="top:${start}%;height:${end-start}%;background-color:${Colors[color]}" course="${title}" addonData="${addon}">${msg}</div>`
   $(`#${id}`).html(p);
+  return msg == "" ? false : true;
 }
 
 var insertTable = (d, t, c, co) => {
@@ -80,12 +88,14 @@ var insertTable = (d, t, c, co) => {
     })
   }
   
-  createBlock("cr_" + d + "_" + tv[0].hour, tv[0].minute / 60 * 100, 100, c.id, c.topic, co);
+  var addon = `${c.topic}<br /><b>${c.instructor}</b>`;
+  var isShown = false;
+  isShown = createBlock("cr_" + d + "_" + tv[0].hour, tv[0].minute / 60 * 100, 100, c.id, addon, co, isShown);
   for (var i = tv[0].hour + 1; i < tv[1].hour; i++) {
-    createBlock("cr_" + d + "_" + i, 0, 100, c.id, c.topic, co);
+    isShown = createBlock("cr_" + d + "_" + i, 0, 100, c.id, addon, co, isShown);
   }
   if (tv[1].minute != 0)
-    createBlock("cr_" + d + "_" + tv[1].hour, 0, tv[1].minute / 60 * 100, c.id, c.topic, co);
+    isShown = createBlock("cr_" + d + "_" + tv[1].hour, 0, tv[1].minute / 60 * 100, c.id, addon, co, isShown);
 }
 
 var hookBlock = () => {
@@ -194,3 +204,26 @@ var aftplan = () => {
     showplan(curpage - 1);
   }
 }
+
+var Toaston = (content, timer) => {
+    $("#snackbar>p").text(content);
+    $("#snackbar").removeClass("snackbar-hide");
+    $("#snackbar").addClass("snackbar-show");
+    if (timer && !isNaN(timer)) {
+        if (ToastTimer) clearTimeout(ToastTimer);
+        ToastTimer = setTimeout(() => {
+            Toastoff();
+        },timer);
+    }
+};
+
+var Toastoff = () => {
+    ToastTimer = null;
+    $("#snackbar>p").text("");
+    $("#snackbar").removeClass("snackbar-show");
+    $("#snackbar").addClass("snackbar-hide");
+}
+
+$("#snackbar").on("click", (e) => {
+    Toastoff();
+});

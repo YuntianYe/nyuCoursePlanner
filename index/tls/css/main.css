@@ -39,4 +39,39 @@ td {
   width: 100%;
   background-color: red;
   cursor: pointer;
+  font-size: .7em;
+  line-height: 1.5em;
+}
+
+.course small {
+  line-height: 1.5em;
+}
+
+.snackbar {
+    position: fixed;
+    background: rgba(0,0,0,0.7);
+    height: 60px;
+    width: 300px;
+    top: calc(100% - 70px);
+    margin: 0 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    z-index: 999;
+    transition: .5s ease;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+    color: white;
+    text-align: center;
+}
+
+.snackbar p {
+    font-size: 0.8em;
+    line-height: 60px;
+}
+
+.snackbar-show {
+    top: calc(100% - 70px);
+}
+
+.snackbar-hide {
+    top: 105%;
 }

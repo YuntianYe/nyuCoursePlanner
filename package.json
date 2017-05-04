@@ -11,7 +11,7 @@
     "Yuuno Hibiki"
   ],
   "author": "NHibiki",
-  "license": "GPLv3",
+  "license": "Creative Commons v3.0",
   "dependencies": {
     "express": "^4.14.0",
     "socket.io": "^1.5.1"

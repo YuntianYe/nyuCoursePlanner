@@ -1,0 +1,7 @@
+{
+    "2017 Fall": {
+        "NYU Shanghai": "./albert/nyushanghai-2017f.json",
+        "NYU Abu": "./albert/nyuabu-2017f.json",
+        "NYU NewYork": "./albert/nyuny-2017f.json",
+    }
+}

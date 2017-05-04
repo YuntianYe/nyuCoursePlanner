@@ -2,7 +2,8 @@ var app = require('express')()
     , server = require('http').createServer(app)
     , express = require('express')
     , io = require('socket.io').listen(server)
-    , course = require('./nyucourse.json');
+    , conf = require('./config.json');
+var allcourse = {};
 var snakes = [];
 const Days = {
   "Mon": 0,
@@ -12,6 +13,23 @@ const Days = {
   "Fri": 4
 }
 
+var readConfig = () => {
+    var CourseNum = 0;
+    for (var s in conf) {
+        allcourse[s] = {};
+        for (var l in conf[s]) {
+            try {
+                allcourse[s][l] = require(conf[s][l]);
+                CourseNum ++;
+            } catch (er) {
+                
+            }
+        }
+    }
+    console.log(CourseNum + " Alberts Loaded.");
+}
+
+readConfig();
 server.listen(8888);
 
 app.use(express.static('index'));
@@ -33,6 +51,7 @@ io.sockets.on('connection', function (socket) {
 var searchCourse = (e) => {
     if (e["data"] == "") return [];
     try {
+      var course = allcourse[e["semester"]][e["location"]];
       var myc = [];
       var myid = {};
       for (var i = 0; i < course.Count; i++) {
@@ -103,8 +122,10 @@ var plannerD = (l, c, cn, s, e, nowlist) => {
   }
 }
 
-var planCourse = (e) => {
+var planCourse = (ep) => {
     try {
+      var course = allcourse[ep["semester"]][ep["location"]];
+      e = ep["cart"];
       var clen = 0;
       courses = {}
       coursename = []

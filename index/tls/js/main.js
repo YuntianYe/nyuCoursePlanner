@@ -142,7 +142,11 @@ var parseCourse = (raw) => {
 }
 
 var startplan = () => {
-  socket.emit("plan", cart);
+  socket.emit("plan", {
+      semester: reqData.semester,
+      location: reqData.location,
+      cart: cart
+  });
 }
 
 var showplan = (e) => {

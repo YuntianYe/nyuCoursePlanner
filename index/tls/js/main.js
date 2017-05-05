@@ -173,21 +173,26 @@ $("#courselist").on("focusout", (e) => {
   $("#courselist").css("display", "none");
 });
 
-
-var socket = io.connect(window.location.href.substring(0, window.location.href.length - 1));
+var myURL = window.location.href.substring(0, window.location.href.length - 1);
+var socket = io.connect(myURL);
 
 socket.on("search", (e) => {
-    parseCourse(e);
+  parseCourse(e);
 });
 
 socket.on("plan", (e) => {
-    result = e;
-    if (e.length > 0) {
-      curpage = 1;
-      initTable();
-      showplan(curpage - 1);
-    }
+  result = e;
+  if (e.length > 0) {
+    curpage = 1;
+    initTable();
+    showplan(curpage - 1);
+  }
 });
+
+socket.on("genics", (e) => {
+  var icsurl = `${myURL}/${e}`;
+  window.open(icsurl);
+})
 
 var preplan = () => {
   if (curpage > 1) {
@@ -203,6 +208,12 @@ var aftplan = () => {
     initTable();
     showplan(curpage - 1);
   }
+}
+
+var genics = () => {
+  if (curpage <= 0) return;
+  else if (result.length <= 0) return;
+  socket.emit("genics", result[curpage - 1]);
 }
 
 var Toaston = (content, timer) => {

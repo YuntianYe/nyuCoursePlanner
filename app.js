@@ -2,7 +2,8 @@ var app = require('express')()
     , server = require('http').createServer(app)
     , express = require('express')
     , io = require('socket.io').listen(server)
-    , conf = require('./config.json');
+    , conf = require('./config.json')
+    , ICS = require('./lib/ics.js');
 var allcourse = {};
 var snakes = [];
 const Days = {
@@ -32,6 +33,7 @@ var readConfig = () => {
 readConfig();
 server.listen(8888);
 
+app.use(express.static('ics'));
 app.use(express.static('index'));
 
 app.get('/', (req, res) => {
@@ -45,6 +47,12 @@ io.sockets.on('connection', function (socket) {
     
     socket.on("plan", (e) => {
         socket.emit("plan", planCourse(e));
+    });
+  
+    socket.on("genics", (e) => {
+        ICS.generate(e, (fname) => {
+          socket.emit("genics", fname);
+        });
     });
 });
 
@@ -148,8 +156,10 @@ var planCourse = (ep) => {
             }
           }
         }
+        var myDate = "";
         if (courses[e[i].id].length > 0) {
           clen++;
+          myDate = courses[e[i].id][0].session;
           coursename.push(e[i].id);
         }
         else {
@@ -157,6 +167,9 @@ var planCourse = (ep) => {
         }
         if (courses[e[i].id+"-rec"].length > 0) {
           clen++;
+          for (ii in courses[e[i].id+"-rec"]) {
+            courses[e[i].id+"-rec"][ii].session = myDate;
+          }
           coursename.push(e[i].id+"-rec");
         }
         else {
@@ -164,6 +177,9 @@ var planCourse = (ep) => {
         }
         if (courses[e[i].id+"-lab"].length > 0) {
           clen++;
+          for (ii in courses[e[i].id+"-lab"]) {
+            courses[e[i].id+"-lab"][ii].session = myDate;
+          }
           coursename.push(e[i].id+"-lab");
         }
         else {

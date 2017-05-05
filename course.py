@@ -36,7 +36,8 @@ class course:
             start = course.find('|') + 1
         self.credit = course[start: course.find('|', start)]
         start = course.find('|', start) + 1
-        self.classNum = course[start + 8: course.find('|', start)]
+        classNum = course.find("Class#: ")
+        self.classNum = course[classNum + 8: course.find('|', start)]
         start = course.find('|', start) + 1
         self.session = course[start + 10: course.find('|', start)]
         start = course.find('|', start) + 1

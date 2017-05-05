@@ -63,7 +63,8 @@ var searchCourse = (e) => {
       var myc = [];
       var myid = {};
       for (var i = 0; i < course.Count; i++) {
-        if (course.Content[i].topic.toLowerCase().indexOf(e["data"].toLowerCase()) != -1 || course.Content[i].instructor.toLowerCase().indexOf(e["data"].toLowerCase()) != -1) {
+        if (course.Content[i].topic.toLowerCase().indexOf(e["data"].toLowerCase()) != -1 || course.Content[i].instructor.toLowerCase().indexOf(e["data"].toLowerCase()) != -1 ||
+        course.Content[i].id.toLowerCase().indexOf(e["data"].toLowerCase()) != -1 ) {
           if (!myid.hasOwnProperty(course.Content[i].id)) {
             myc.push({
               id: course.Content[i].id,

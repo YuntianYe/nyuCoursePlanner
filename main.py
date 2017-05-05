@@ -39,7 +39,16 @@ class Map:
                 detail['topic'] = mapping[detail['id']]
             except Exception:
                 pass
-
+    
+    def dump_map(self, origin, omap, re):
+        for detail in origin:
+            if detail['id'] not in omap:
+                continue
+            if re.search(detail['title']):
+                detail['topic'] = omap[detail['id']]
+            else:
+                if omap[detail['id']] not in detail['topic']:
+                    detail['topic'] = omap[detail['id']] + " " + detail['topic']
 
 class Course:
     def __init__(self):
@@ -55,8 +64,6 @@ class Course:
         else:
             c["status"] = 0
 
-        cpos = course.find('Component:')
-        c["component"] = course[cpos + 11: course.find("\n", cpos)].strip()
         start = course.find('Topic: ')
         if start != -1:
             c["topic"] = course[start + 7: course.find('|', start)].strip()
@@ -72,12 +79,14 @@ class Course:
             c["id"] = c["topic"].split("\n")[0].strip()
         c["credit"] = course[start: course.find('|', start)].strip()
         c["credit"] = c["credit"].replace("units", "").strip()
-        start = course.find('|', start) + 1
-        c["classNum"] = course[start + 8: course.find('|', start)].strip()
-        start = course.find('|', start) + 1
-        c["session"] = course[start + 10: course.find('|', start)].strip()
-        start = course.find('|', start) + 1
-        c["section"] = course[start + 10: course.find('Class Status:')].strip()
+        cpos = course.find('Class#:')
+        c["classNum"] = course[cpos + 7: course.find("|", cpos)].strip()
+        cpos = course.find('Session:')
+        c["session"] = course[cpos + 8: course.find("|", cpos)].strip()
+        cpos = course.find('Section:')
+        c["section"] = course[cpos + 8: course.find("\n", cpos)].strip()
+        cpos = course.find('Component:')
+        c["component"] = course[cpos + 10: course.find("\n", cpos)].strip()
         c["schedule"] = ""
         if self.pattern.search(course):
             c["schedule"] = self.pattern.search(course).group()
@@ -99,9 +108,11 @@ class Course:
 
 class NYUSubmitter():
     def __init__(self):
+        self.doc = {}
         self.nyucourse = []
         self.netid = ""
         self.netpasswd = ""
+        self.docre = re.compile('[A-Z]+\-[A-Z]+ [0-9]+\S+')
         self.logined = False
         self.options = webdriver.ChromeOptions()
         self.options.add_argument(
@@ -161,6 +172,15 @@ class NYUSubmitter():
                     CLASSNUM = self.driver.find_element_by_id("NYU_CLS_WRK_DESCR100").text
                     CLASSNUM = int(CLASSNUM[CLASSNUM.find("Total Class Count:") + 18:].strip())
                     NOWNUM = 0
+                    try:
+                        DocPage = self.driver.find_element_by_id("win0div$ICField3$0").text.split("\n")
+                        for pg in DocPage:
+                            if "-SHU " in pg and "description for" not in pg:
+                                if self.docre.search(pg):
+                                    pgid = self.docre.search(pg).group().strip()
+                                    self.doc[pgid] = pg.replace(pgid, "").strip()
+                    except Exception:
+                        pass
                     for j in range(MAXIC):
                         try:
                             self.driver.execute_script(
@@ -195,8 +215,9 @@ class NYUSubmitter():
     def saveCourses(self):
         a = Map()
         content = self.parse()
-        a.get_content()
-        a.get_map(content)
+        #a.get_content()
+        #a.get_map(content)
+        a.dump_map(content, self.doc, self.docre)
         filec = json.dumps({
             "Count" : len(content),
             "Content" : content

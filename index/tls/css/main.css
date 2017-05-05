@@ -75,3 +75,16 @@ td {
 .snackbar-hide {
     top: 105%;
 }
+
+.highlight-top {
+  border-top: blue 3px solid;
+}
+
+.highlight-bottom {
+  border-bottom: blue 3px solid;
+}
+
+.highlight-side {
+  border-left: blue 3px solid;
+  border-right: blue 3px solid;
+}

@@ -17,6 +17,7 @@ var curpage = 1;
 var cart = [];
 var result = [];
 var cachedCourse = {};
+var fixedCourse = [];
 var ToastTimer = null;
 
 var switchData = (d, e) => {
@@ -65,13 +66,13 @@ var initTable = () => {
   $("#cal").html(mycal);
 }
 
-var createBlock = (id, start, end, title, addon, color, s) => {
+var createBlock = (id, start, end, title, addon, color, s, ccid, myclass) => {
   var p = $(`#${id}`).html();
   var msg = "";
   if (!s && end - start > 50) {
     msg = `<b>${title}</b><br /><small>${addon}</small>`;
   }
-  p += `<div class="course" style="top:${start}%;height:${end-start}%;background-color:${Colors[color]}" course="${title}" addonData="${addon}">${msg}</div>`
+  p += `<div class="course ${myclass}" style="top:${start}%;height:${end-start}%;background-color:${Colors[color]}" course="${ccid}" addonData="${addon}">${msg}</div>`
   $(`#${id}`).html(p);
   return msg == "" ? false : true;
 }
@@ -88,18 +89,34 @@ var insertTable = (d, t, c, co) => {
     })
   }
   
+  var hl = false;
+  if (fixedCourse.indexOf(c.classNum) != -1) hl = true;
+  
   var addon = `${c.topic}<br /><b>${c.instructor}</b>`;
   var isShown = false;
-  isShown = createBlock("cr_" + d + "_" + tv[0].hour, tv[0].minute / 60 * 100, 100, c.id, addon, co, isShown);
+  isShown = createBlock("cr_" + d + "_" + tv[0].hour, tv[0].minute / 60 * 100, 100, c.id, addon, co, isShown, c.classNum, hl ? "highlight-top highlight-side" : "");
   for (var i = tv[0].hour + 1; i < tv[1].hour; i++) {
-    isShown = createBlock("cr_" + d + "_" + i, 0, 100, c.id, addon, co, isShown);
+    var nc = "highlight-side";
+    if (i == tv[1].hour - 1 && tv[1].minute == 0) nc += " highlight-bottom";
+    isShown = createBlock("cr_" + d + "_" + i, 0, 100, c.id, addon, co, isShown, c.classNum, hl ? nc : "");
   }
   if (tv[1].minute != 0)
-    isShown = createBlock("cr_" + d + "_" + tv[1].hour, 0, tv[1].minute / 60 * 100, c.id, addon, co, isShown);
+    isShown = createBlock("cr_" + d + "_" + tv[1].hour, 0, tv[1].minute / 60 * 100, c.id, addon, co, isShown, c.classNum, hl ? "highlight-bottom highlight-side" : "");
 }
 
 var hookBlock = () => {
-  
+  $("div.course").on("click", (e) => {
+    e.preventDefault();
+    var s = $(e.target);
+    while (!s.attr("course")) s = s.parent();
+    var num = s.attr("course");
+    if (fixedCourse.indexOf(num) == -1) {
+      fixedCourse.push(num);
+    } else {
+      fixedCourse.splice(fixedCourse.indexOf(num), 1);
+    }
+    showplan(curpage - 1);
+  })
 }
 
 var listcourse = (e) => {
@@ -154,11 +171,11 @@ var showplan = (e) => {
   
   $("#pagenum").html((e + 1) + "/" + (result.length));
   for (var i in result[e]) {
-    var co = parseInt(Math.random() * Colors.length);
+    //var co = parseInt(Math.random() * Colors.length);
     for (var j in result[e][i].days)
-      insertTable(Days[result[e][i].days[j]] + 1, result[e][i].schedule, result[e][i], co);
+      insertTable(Days[result[e][i].days[j]] + 1, result[e][i].schedule, result[e][i], i);
   }
-  
+  hookBlock();
 }
 
 $("#navinp").on("keyup", (e) => {
@@ -196,7 +213,26 @@ socket.on("genics", (e) => {
 
 var preplan = () => {
   if (curpage > 1) {
-    curpage --;
+    var topage = curpage - 1;
+    while (topage >= 1) {
+      var flag = true;
+      for (i in fixedCourse) {
+        var hasNum = false;
+        for (j in result[topage - 1]) {
+          if (result[topage - 1][j].classNum == fixedCourse[i]) hasNum = true;
+        }
+        if (!hasNum) {
+          flag = false;
+          break;
+        }
+      }
+      if (flag) break;
+      topage--;
+      if (topage < 1) {
+        return;
+      }
+    }
+    curpage = topage;
     initTable();
     showplan(curpage - 1);
   }
@@ -204,7 +240,26 @@ var preplan = () => {
 
 var aftplan = () => {
   if (curpage < result.length) {
-    curpage ++;
+    var topage = curpage + 1;
+    while (topage <= result.length) {
+      var flag = true;
+      for (i in fixedCourse) {
+        var hasNum = false;
+        for (j in result[topage - 1]) {
+          if (result[topage - 1][j].classNum == fixedCourse[i]) hasNum = true;
+        }
+        if (!hasNum) {
+          flag = false;
+          break;
+        }
+      }
+      if (flag) break;
+      topage++;
+      if (topage > result.length) {
+        return;
+      }
+    }
+    curpage = topage;
     initTable();
     showplan(curpage - 1);
   }

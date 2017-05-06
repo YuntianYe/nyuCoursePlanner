@@ -108,6 +108,7 @@ class Course:
 
 class NYUSubmitter():
     def __init__(self):
+        self.SLEEPTIME = 1
         self.doc = {}
         self.nyucourse = []
         self.netid = ""
@@ -122,6 +123,8 @@ class NYUSubmitter():
     def login(self):
         self.netid = input("Please Input Your Netid > ")
         self.netpasswd = input("Please Input Your Password > ")
+        os.system("clear")
+        print("Albert Spyder Version 1.0")
         self.logined = True
 
     def backToCourses(self, driver):
@@ -161,45 +164,56 @@ class NYUSubmitter():
             try:
                 for i in range(5, 50):
                     s = str(i)
-                    time.sleep(1)
+                    time.sleep(self.SLEEPTIME * 2)
                     self.driver.execute_script("window.frames[\"TargetContent\"].document.querySelectorAll(\"a[ptlinktgt='pt_peoplecode']\")[" + s + "].click()")
-                    time.sleep(1)
+                    time.sleep(self.SLEEPTIME)
                     # Do Something...
-                    MAXIC = 50
-                    # time.sleep(10)
+                    MAXIC = 100
                     self.driver.switch_to.frame('TargetContent')
-                    time.sleep(1)
+                    time.sleep(self.SLEEPTIME)
                     CLASSNUM = self.driver.find_element_by_id("NYU_CLS_WRK_DESCR100").text
                     CLASSNUM = int(CLASSNUM[CLASSNUM.find("Total Class Count:") + 18:].strip())
                     NOWNUM = 0
+                    pgPrint = self.driver.find_element_by_id("win0div$ICField3$0").text
                     try:
-                        DocPage = self.driver.find_element_by_id("win0div$ICField3$0").text.split("\n")
+                        DocPage = pgPrint.split("\n")
                         for pg in DocPage:
-                            if "-SHU " in pg and "description for" not in pg:
+                            if "-SHU " in pg and "description for" not in pg and "»" not in pg and "Prerequisite" not in pg:
                                 if self.docre.search(pg):
                                     pgid = self.docre.search(pg).group().strip()
-                                    self.doc[pgid] = pg.replace(pgid, "").strip()
+                                    if pgid not in self.doc:
+                                        self.doc[pgid] = pg.replace(pgid, "").strip()
                     except Exception:
                         pass
+                    pgRaw = self.driver.find_element_by_id("win0div$ICField3$0").get_attribute("innerHTML")
                     for j in range(MAXIC):
                         try:
-                            self.driver.execute_script(
-                                "window.submitAction_win0(window.document.win0,'NYU_CLS_DERIVED_TERM$" + str(
-                                    j) + "');")
-                            time.sleep(1)
-                            self.nyucourse.append(self.driver.find_element_by_id("ACE_NYU_CLS_DTL_CLASS_NBR$" + str(j)).text)
-                            NOWNUM += 1
+                            elenum = "NYU_CLS_DERIVED_TERM$" + str(j)
+                            if elenum in pgRaw:
+                                self.driver.execute_script(
+                                "window.submitAction_win0(window.document.win0,'" + elenum + "');")
+                                time.sleep(self.SLEEPTIME)
+                        except Exception:
+                            pass
+                    pgRaw = self.driver.find_element_by_id("win0div$ICField3$0").get_attribute("innerHTML")
+                    for j in range(MAXIC):
+                        try:
+                            elenum = "ACE_NYU_CLS_DTL_CLASS_NBR$" + str(j)
+                            if elenum in pgRaw:
+                                self.nyucourse.append(self.driver.find_element_by_id(elenum).text)
+                                NOWNUM += 1
                             if NOWNUM >= CLASSNUM:
                                 break
                         except Exception:
                             pass
+                    print("Get Course:", len(self.nyucourse))
                     self.driver.switch_to.parent_frame()
-                    time.sleep(1)
+                    time.sleep(self.SLEEPTIME)
                     self.backToCourses(self.driver)
-                    time.sleep(1)
+                    time.sleep(self.SLEEPTIME)
             except Exception as e:
                 print("Inner Error:", e)
-            print("Get Course Num:", str(len(self.nyucourse)))
+            print("Get Total Course:", str(len(self.nyucourse)))
             # print(self.nyucourse)
         except Exception:
             print ("[Login Error]")

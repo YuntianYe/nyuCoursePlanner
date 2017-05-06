@@ -31,7 +31,15 @@ var readConfig = () => {
 }
 
 readConfig();
-server.listen(8888);
+
+var myPortNum = 8888;
+try {
+    myPortNum = parseInt(process.argv[2]) || 8888;
+} catch (er) {}
+if (myPortNum < 1 || myPortNum > 65534) myPortNum = 8888;
+
+console.log("Server Start At Port: " + myPortNum);
+server.listen(myPortNum);
 
 app.use(express.static('ics'));
 app.use(express.static('index'));

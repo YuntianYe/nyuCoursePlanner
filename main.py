@@ -178,7 +178,9 @@ class NYUSubmitter():
                     try:
                         DocPage = pgPrint.split("\n")
                         for pg in DocPage:
-                            if "-SHU " in pg and "description for" not in pg and "»" not in pg and "Prerequisite" not in pg:
+                            if "-SHU " in pg and "description for" not in pg and "»" not in pg and "requisite" not in pg:
+                                if pg.find("-SHU ") > 20:
+                                    continue
                                 if self.docre.search(pg):
                                     pgid = self.docre.search(pg).group().strip()
                                     if pgid not in self.doc:

@@ -4,7 +4,6 @@
   "description": "NYU Course Planner",
   "main": "app.js",
   "scripts": {
-    "install": "npm install",
     "build": "python3 main.py",
     "server": "node app"
   },

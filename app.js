@@ -32,11 +32,11 @@ var readConfig = () => {
 
 readConfig();
 
-var myPortNum = 80;
+var myPortNum = 8080;
 try {
-    myPortNum = parseInt(process.argv[2]) || 80;
+    myPortNum = parseInt(process.argv[2]) || parseInt(process.env.PORT) || 8080;
 } catch (er) {}
-if (myPortNum < 1 || myPortNum > 65534) myPortNum = 80;
+if (myPortNum < 1 || myPortNum > 65534) myPortNum = 8080;
 
 console.log("Server Start At Port: " + myPortNum);
 server.listen(myPortNum);

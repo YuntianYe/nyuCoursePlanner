@@ -43,13 +43,13 @@ A Python Based NYU Course Planner
   npm run start
 ```
 
-    The default port is 80
+    The default port is 8080
     If you want to change this PortNum
     Please add one more argument when type the command.
-    For example, to run on port 8888.
+    For example, to run on port 80.
 
 ```bash
-  sudo npm run start 8888
+  sudo npm run start 80
 ```
 
 <p style="color:red">Be Aware! If you run server on a small port num, please guarantee ROOT permission!</p>

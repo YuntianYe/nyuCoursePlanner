@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "build": "python3 main.py",
-    "server": "node app"
+    "start": "node app"
   },
   "keywords": [
     "NHibiki",

@@ -208,6 +208,7 @@ socket.on("plan", (e) => {
 
 socket.on("genics", (e) => {
   var icsurl = `${myURL}/${e}`;
+  console.log(icsurl);
   window.open(icsurl);
 })
 

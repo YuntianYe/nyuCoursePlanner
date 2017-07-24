@@ -1,8 +1,11 @@
 var app = require('express')()
-    , server = require('http').createServer(app)
+    , http = require('http')
+    , https = require('https')
     , express = require('express')
-    , io = require('socket.io').listen(server)
+    , io = require('socket.io')
     , conf = require('./config.json')
+    , SSL = require('./ssl.json')
+    , fs = require('fs')
     , ICS = require('./lib/ics.js');
 var allcourse = {};
 var snakes = [];
@@ -33,13 +36,26 @@ var readConfig = () => {
 readConfig();
 
 var myPortNum = 8080;
+var server = null;
 try {
     myPortNum = parseInt(process.argv[2]) || parseInt(process.env.PORT) || 8080;
 } catch (er) {}
 if (myPortNum < 1 || myPortNum > 65534) myPortNum = 8080;
 
-console.log("Server Start At Port: " + myPortNum);
-server.listen(myPortNum);
+if (SSL.pub && SSL.pri) {
+  var options = {
+    cert: fs.readFileSync(SSL.pub),
+    key : fs.readFileSync(SSL.pri)
+  }
+  server = https.createServer(options, app);
+  console.log("SSL Server Start At Port: " + myPortNum);
+} else {
+  server = http.createServer(app);
+  console.log("Normal Server Start At Port: " + myPortNum);
+}
+
+server.listen(myPortNum, "::");
+io.listen(server);
 
 app.use(express.static('ics'));
 app.use(express.static('index'));

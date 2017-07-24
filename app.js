@@ -2,7 +2,7 @@ var app = require('express')()
     , http = require('http')
     , https = require('https')
     , express = require('express')
-    , io = require('socket.io')
+    , socket = require('socket.io')
     , conf = require('./config.json')
     , SSL = require('./ssl.json')
     , fs = require('fs')
@@ -55,7 +55,7 @@ if (SSL.pub && SSL.pri) {
 }
 
 server.listen(myPortNum, "::");
-io.listen(server);
+var io = socket.listen(server);
 
 app.use(express.static('ics'));
 app.use(express.static('index'));

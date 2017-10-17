@@ -108,7 +108,7 @@ class Course:
 
 class NYUSubmitter():
     def __init__(self):
-        self.SLEEPTIME = 1
+        self.SLEEPTIME = 2
         self.doc = {}
         self.nyucourse = []
         self.netid = ""
@@ -123,8 +123,9 @@ class NYUSubmitter():
     def login(self):
         self.netid = input("Please Input Your Netid > ")
         self.netpasswd = input("Please Input Your Password > ")
+        os.system("cls")
         os.system("clear")
-        print("Albert Spyder Version 1.0")
+        print("Albert Spyder Version 1.1")
         self.logined = True
 
     def backToCourses(self, driver):
@@ -145,10 +146,11 @@ class NYUSubmitter():
             self.driver.find_element_by_xpath("//*[@id=\"userid\"]").send_keys(self.netid)
             self.driver.find_element_by_xpath("//*[@id=\"pwd\"]").send_keys(self.netpasswd)
             self.driver.find_element_by_xpath("//*[@class=\"psloginbutton\"]").click()
-            time.sleep(2)
+            time.sleep(5)
 
-            self.driver.find_element_by_xpath("//*[@title=\"Visit the Student Center for your Registration, Bursar, Financial Aid, and Personal Records\"]").click()
-            time.sleep(2)
+            # self.driver.find_element_by_xpath("//*[@title=\"Visit the Student Center for your Registration, Bursar, Financial Aid, and Personal Records\"]").click()
+            self.driver.execute_script("window.document.querySelector('img[alt=\"Student Center\"]').click()")
+            time.sleep(5)
 
             self.driver.execute_script(
                 "window.frames['TargetContent'].submitAction_win0(window.frames['TargetContent'].document.win0,'DERIVED_SSS_SCL_SSS_GO_4$83$');")
@@ -159,10 +161,12 @@ class NYUSubmitter():
                 "window.frames['TargetContent'].document.querySelector('option[value=\"NYU Shanghai\"]').selected=true")
             self.driver.execute_script(
                 "window.frames['TargetContent'].document.querySelector('select[class=\"PSDROPDOWNLIST\"]').onchange()")
+            self.driver.execute_script("window.frames['TargetContent'].document.querySelector('input[id=\"NYU_CLS_WRK_NYU_SPRING\"]').click()")
+            self.currentSemester = "2018"
             time.sleep(2)
 
-            try:
-                for i in range(5, 50):
+            for i in range(5, 50):
+                try:
                     s = str(i)
                     time.sleep(self.SLEEPTIME * 2)
                     self.driver.execute_script("window.frames[\"TargetContent\"].document.querySelectorAll(\"a[ptlinktgt='pt_peoplecode']\")[" + s + "].click()")
@@ -202,7 +206,9 @@ class NYUSubmitter():
                         try:
                             elenum = "ACE_NYU_CLS_DTL_CLASS_NBR$" + str(j)
                             if elenum in pgRaw:
-                                self.nyucourse.append(self.driver.find_element_by_id(elenum).text)
+                                theText = self.driver.find_element_by_id(elenum).text
+                                if self.currentSemester in theText:
+                                    self.nyucourse.append()
                                 NOWNUM += 1
                             if NOWNUM >= CLASSNUM:
                                 break
@@ -213,8 +219,8 @@ class NYUSubmitter():
                     time.sleep(self.SLEEPTIME)
                     self.backToCourses(self.driver)
                     time.sleep(self.SLEEPTIME)
-            except Exception as e:
-                print("Inner Error:", e)
+                except Exception as e:
+                    print("Inner Error:", e)
             print("Get Total Course:", str(len(self.nyucourse)))
             # print(self.nyucourse)
         except Exception:

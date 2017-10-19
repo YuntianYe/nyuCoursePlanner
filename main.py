@@ -14,7 +14,7 @@ class Map:
         self.feature_b = re.compile('W-[0-9]+')
 
     def get_content(self):
-        with open('class.txt', 'r') as f:
+        with open('class.txt', 'r', encoding="utf-8") as f:
             topics = f.readlines()
         for topic in topics:
             if '-SHU' in topic and topic != '\n':
@@ -245,14 +245,14 @@ class NYUSubmitter():
     def saveCourses(self):
         a = Map()
         content = self.parse()
-        #a.get_content()
+        a.get_content()
         #a.get_map(content)
         a.dump_map(content, self.doc, self.docre)
         filec = json.dumps({
             "Count" : len(content),
             "Content" : content
         })
-        with open("nyucourse.json", "w") as f:
+        with open("nyucourse.json", "w", encoding="utf-8") as f:
             f.write(filec)
 
 if __name__ == "__main__":

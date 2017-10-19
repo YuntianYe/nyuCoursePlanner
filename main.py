@@ -136,7 +136,7 @@ class NYUSubmitter():
         driver.execute_script(
             "window.frames['TargetContent'].submitAction_win0(window.frames['TargetContent'].document.win0,'LINK1$" + str(number) + "');")
 
-    def intoAlbert(self):
+    def intoAlbert(self, saveRaws=False):
         if not self.logined:
             self.login()
         try:
@@ -176,6 +176,8 @@ class NYUSubmitter():
                     self.driver.switch_to.frame('TargetContent')
                     time.sleep(self.SLEEPTIME)
                     CLASSNUM = self.driver.find_element_by_id("NYU_CLS_WRK_DESCR100").text
+                    pggStart = CLASSNUM.find("results for:")
+                    pgTitle  = CLASSNUM[pggStart + 13:CLASSNUM.find("|", pggStart) - 1]
                     CLASSNUM = int(CLASSNUM[CLASSNUM.find("Total Class Count:") + 18:].strip())
                     NOWNUM = 0
                     pgPrint = self.driver.find_element_by_id("win0div$ICField3$0").text
@@ -202,19 +204,25 @@ class NYUSubmitter():
                         except Exception:
                             pass
                     pgRaw = self.driver.find_element_by_id("win0div$ICField3$0").get_attribute("innerHTML")
+                    if saveRaws:
+                        with open("./rawPage/" + pgTitle + ".html", "w", encoding="utf-8") as f:
+                            f.write(pgRaw)
                     for j in range(MAXIC):
                         try:
                             elenum = "ACE_NYU_CLS_DTL_CLASS_NBR$" + str(j)
                             if elenum in pgRaw:
                                 theText = self.driver.find_element_by_id(elenum).text
                                 if self.currentSemester in theText:
-                                    self.nyucourse.append()
+                                    self.nyucourse.append(theText)
                                 NOWNUM += 1
                             if NOWNUM >= CLASSNUM:
                                 break
                         except Exception:
                             pass
                     print("Get Course:", len(self.nyucourse))
+                    if saveRaws:
+                        with open("./rawPage/all.json", "w", encoding="utf-8") as f:
+                            f.write(json.dumps(self.nyucourse))
                     self.driver.switch_to.parent_frame()
                     time.sleep(self.SLEEPTIME)
                     self.backToCourses(self.driver)
@@ -249,5 +257,5 @@ class NYUSubmitter():
 
 if __name__ == "__main__":
     nyu = NYUSubmitter()
-    nyu.intoAlbert()
+    nyu.intoAlbert(True)
     nyu.saveCourses()

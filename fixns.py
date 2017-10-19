@@ -31,11 +31,9 @@ class Map:
         print("Candidate:", len(mapping))
         print("Target   :", len(origin))
         for detail in origin:
-            try:
+            if detail['id'] in mapping:
                 detail['topic'] = mapping[detail['id']]
                 print("Hit:", detail['id'])
-            except Exception:
-                pass
     
     def dump_map(self, origin, omap, re):
         for detail in origin:

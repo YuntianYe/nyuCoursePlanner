@@ -34,11 +34,12 @@ class Map:
 
     def get_map(self, origin):
         mapping = self.map
+        print("Candidate:", len(mapping))
+        print("Target   :", len(origin))
         for detail in origin:
-            try:
+            if detail['id'] in mapping:
                 detail['topic'] = mapping[detail['id']]
-            except Exception:
-                pass
+                print("Hit:", detail['id'])
     
     def dump_map(self, origin, omap, re):
         for detail in origin:
@@ -246,7 +247,7 @@ class NYUSubmitter():
         a = Map()
         content = self.parse()
         a.get_content()
-        #a.get_map(content)
+        a.get_map(content)
         a.dump_map(content, self.doc, self.docre)
         filec = json.dumps({
             "Count" : len(content),

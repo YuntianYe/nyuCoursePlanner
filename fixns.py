@@ -35,6 +35,15 @@ class Map:
                 detail['topic'] = mapping[detail['id']]
                 print("Hit:", detail['id'])
     
+    def check_map(self, origin):
+        is_all = True
+        for detail in origin:
+            if detail['topic'].strip() == detail['id'].strip():
+                is_all = False
+                print("Leak:", detail['id'])
+        if is_all:
+            print("All Good!")
+    
     def dump_map(self, origin, omap, re):
         for detail in origin:
             if detail['id'] not in omap:
@@ -45,13 +54,21 @@ class Map:
                 if omap[detail['id']] not in detail['topic']:
                     detail['topic'] = omap[detail['id']] + " " + detail['topic']
 
+def do_check(m, f):
+    m.check_map(f["Content"])
+
+def do_map(m, f):
+    m.get_map(f["Content"])
+    with open("./nyucourse.json", "w", encoding="utf-8") as of:
+        of.write(json.dumps(f))
+    m.check_map(f["Content"])
+
+
 if __name__ == "__main__":
     f = {}
     with open("./nyucourse.json", "r", encoding="utf-8") as of:
         f = json.loads(of.read())
     m = Map()
     m.get_content()
-    m.get_map(f["Content"])
-    with open("./nyucourse.json", "w", encoding="utf-8") as of:
-        of.write(json.dumps(f))
+    do_check(m, f)
 

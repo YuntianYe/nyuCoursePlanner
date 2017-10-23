@@ -336,4 +336,7 @@ SPAN-SHU	10	Intensive Elementary Spanish
 SPAN-SHU	20	Intensive Intermediate Spanish
 FREN-SHU	10	Intensive Elementary French
 FREN-SHU	20	Intensive Intermediate French
-CSCI-SHU	213	Database
+CSCI-SHU	213	Databases
+MKTG-SHU	9	Research for Customer Insights
+BUSF-SHU	5	Principles of Finance for Non-majors
+ECON-SHU	5	Math for Econ 1: Optimization

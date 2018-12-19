@@ -1,20 +1,25 @@
 {
-  "name": "NYUCourse",
-  "version": "1.1.1",
-  "description": "NYU Course Planner",
-  "main": "app.js",
+  "name": "ncpindex",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "build": "python3 main.py",
-    "start": "node app"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "NHibiki",
-    "Yuuno Hibiki"
-  ],
-  "author": "NHibiki",
-  "license": "Creative Commons v3.0",
-  "dependencies": {
-    "express": "^4.14.0",
-    "socket.io": "^1.5.1"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NHibiki/nyuCoursePlanner.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NHibiki/nyuCoursePlanner/issues"
+  },
+  "homepage": "https://github.com/NHibiki/nyuCoursePlanner#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "webpack": "^3.8.1"
   }
 }

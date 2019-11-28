@@ -163,7 +163,7 @@ class NYUSubmitter():
             self.driver.execute_script(
                 "window.frames['TargetContent'].document.querySelector('select[class=\"PSDROPDOWNLIST\"]').onchange()")
             self.driver.execute_script("window.frames['TargetContent'].document.querySelector('input[id=\"NYU_CLS_WRK_NYU_SPRING\"]').click()")
-            self.currentSemester = "2018"
+            self.currentSemester = "2020"
             time.sleep(2)
 
             for i in range(5, 50):

@@ -141,11 +141,11 @@ class NYUSubmitter():
         if not self.logined:
             self.login()
         try:
-            self.driver.get("http://albert.nyu.edu")
+            self.driver.get('https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL')
             time.sleep(2)
 
-            self.driver.find_element_by_xpath("//*[@id=\"userid\"]").send_keys(self.netid)
-            self.driver.find_element_by_xpath("//*[@id=\"pwd\"]").send_keys(self.netpasswd)
+            #self.driver.find_element_by_xpath("//*[@id=\"userid\"]").send_keys(self.netid)
+            #self.driver.find_element_by_xpath("//*[@id=\"pwd\"]").send_keys(self.netpasswd)
             self.driver.find_element_by_xpath("//*[@class=\"psloginbutton\"]").click()
             time.sleep(5)
 

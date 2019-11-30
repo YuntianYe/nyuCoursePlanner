@@ -138,19 +138,19 @@ class NYUSubmitter():
             "window.frames['TargetContent'].submitAction_win0(window.frames['TargetContent'].document.win0,'LINK1$" + str(number) + "');")
 
     def intoAlbert(self, saveRaws=False):
-        if not self.logined:
-            self.login()
+        #if not self.logined:
+          #  self.login()
         try:
             self.driver.get('https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL')
             time.sleep(2)
 
             #self.driver.find_element_by_xpath("//*[@id=\"userid\"]").send_keys(self.netid)
             #self.driver.find_element_by_xpath("//*[@id=\"pwd\"]").send_keys(self.netpasswd)
-            self.driver.find_element_by_xpath("//*[@class=\"psloginbutton\"]").click()
-            time.sleep(5)
+            #self.driver.find_element_by_xpath("//*[@class=\"psloginbutton\"]").click()
+            #time.sleep(5)
 
             # self.driver.find_element_by_xpath("//*[@title=\"Visit the Student Center for your Registration, Bursar, Financial Aid, and Personal Records\"]").click()
-            self.driver.execute_script("window.document.querySelector('img[alt=\"Student Center\"]').click()")
+            #self.driver.execute_script("window.document.querySelector('img[alt=\"Student Center\"]').click()")
             time.sleep(5)
 
             self.driver.execute_script(
